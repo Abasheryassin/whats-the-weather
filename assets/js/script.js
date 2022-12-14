@@ -5,18 +5,16 @@ var currentBlock = $('#currentcity');
 var searchedCities = $('#searched-cities');
 var savedCities = [];
 
-var citySearch;
-
 displaySearched();
 
 //save searched input
 saveBtn.on("click", function () {
-    citySearch = $(this).prev().val();
-    getCityLocation();
+    var citySearch = $(this).prev().val();
+    getCityLocation(citySearch);
 });
 
 //Fetch api coordinates and 5 day weather cast
-function getCityLocation(response) {
+function getCityLocation(citySearch) {
     fetch('https://api.openweathermap.org/data/2.5/forecast?q=' + citySearch + '&cnt=50&appid=4c3954b1395c7d9228bb76f474415aa0&units=imperial')
         .then(function (response) {
             if (response === 404) {
@@ -50,7 +48,7 @@ function currentWeather(location) {
 //display current weather
 function displayCurrentWeather(data) {
     var cityName = $('<h2></h2>').text(data.name);
-    var date =  dayjs().format('MMM DD, YYYY');
+    var date = dayjs().format('MMM DD, YYYY');
     var realdate = $("<p></p>").text(date);
     var temp = $("<p></p>").text('Temp: ' + data.main.temp + ' deg F');
     var humidity = $("<p></p>").text('Humidity: ' + data.main.humidity + '%');
@@ -86,9 +84,14 @@ function displayFutureWeather(data) {
 //save and searched cities
 function saveCities(data) {
     var savecityname = data.city.name;
-    savedCities.push(savecityname);
-    localStorage.setItem("cities", JSON.stringify(savedCities));
-    displaySearched();
+
+    if (savedCities.includes(savecityname)) {
+        return;
+    } else {
+        savedCities.push(savecityname);
+        localStorage.setItem("cities", JSON.stringify(savedCities));
+        displaySearched();
+    }
 }
 
 function getSavedCities() {
@@ -101,15 +104,16 @@ function getSavedCities() {
     return savedCities;
 }
 
-function displaySearched(){
+function displaySearched() {
     searchedCities.empty();
     savedCities = getSavedCities();
     for (var i = 0; i < savedCities.length; i++) {
-        var button = $('<button></button>').text(savedCities[i]);
+        var button = $('<button></button>');
+        button.text(savedCities[i]);
         searchedCities.append(button);
+        button.on("click", function () {
+            var citySearch = $(this).text();
+            getCityLocation(citySearch);
+        })
     }
-    button.on("click", function() {
-        var whatthe = $(this).val();
-        console.log(whatthe);
-    })
 }
