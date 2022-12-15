@@ -1,5 +1,5 @@
 // my wather API code 4c3954b1395c7d9228bb76f474415aa0
-var saveBtn = $('.btn');
+var searchBtn = $('.btn');
 var forcastBlock = $('#forcast5');
 var currentBlock = $('#currentcity');
 var searchedCities = $('#searched-cities');
@@ -8,8 +8,8 @@ var savedCities = [];
 displaySearched();
 
 //save searched input
-saveBtn.on("click", function () {
-    var citySearch = $(this).prev().val();
+searchBtn.on("click", function () {
+    var citySearch = $("#searchTerm").val();
     getCityLocation(citySearch);
 });
 
